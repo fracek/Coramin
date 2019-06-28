@@ -145,11 +145,13 @@ def _single_solve(v, model, solver, vardatalist, lb_or_ub):
             warnings.warn(msg)
             logger.warning(msg)
     if lb_or_ub == 'lb':
-        if new_bnd < pyo.value(v.lb) or new_bnd is None:
-            new_bnd = pyo.value(v.lb)
+        if v.lb is not None:
+            if new_bnd is None or new_bnd < pyo.value(v.lb):
+                new_bnd = pyo.value(v.lb)
     else:
-        if new_bnd > pyo.value(v.ub) or new_bnd is None:
-            new_bnd = pyo.value(v.ub)
+        if v.ub is not None:
+            if new_bnd is None or new_bnd > pyo.value(v.ub):
+                new_bnd = pyo.value(v.ub)
 
     # remove the objective function
     del model.__obj_bounds_tightening
@@ -362,5 +364,3 @@ def perform_obbt(model, solver, varlist=None, objective_ub=None, update_bounds=T
     _bt_cleanup(model=model, solver=solver, vardatalist=vardata_list, initial_var_values=initial_var_values,
                 deactivated_objectives=deactivated_objectives, lower_bounds=_lower_bounds, upper_bounds=_upper_bounds)
     return global_lower, global_upper
-
-

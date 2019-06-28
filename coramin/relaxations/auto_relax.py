@@ -558,6 +558,11 @@ def relax(model, descend_into=None, in_place=False, use_fbbt=True):
     if use_fbbt:
         fbbt(m, deactivate_satisfied_constraints=True)
 
+    for v in m.component_data_objects(ctype=pe.Var):
+        if v.lb is not None and v.ub is not None:
+            if abs(v.ub - v.lb) < 1e-6:
+                v.setlb(v.ub)
+
     if descend_into is None:
         descend_into = (pe.Block, Disjunct)
 
